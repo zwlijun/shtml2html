@@ -93,17 +93,12 @@ var merge = function(src, dest, wwwroot, save) {
     return file;
 };
 
-
-var shtml2html = function(from, to, wwwroot, callback) {
-    from = from || './';
-    to = to || './_shtml2html_' + (+new Date()).toString().substring(6) + '/';
-    wwwroot = fixPath(wwwroot);
-    buffer = {};
-
+var fetch = function(from, to, wwwroot){
     if (fs.statSync(from).isFile()) {
         if (!path.extname(to)) {
             to = fixPath(to) + from;
         }
+
         merge(from, to, wwwroot, true);
     }
     else if (fs.statSync(from).isDirectory()) {
@@ -111,15 +106,27 @@ var shtml2html = function(from, to, wwwroot, callback) {
         to = fixPath(to);
 
         var files = fs.readdirSync(from);
+
         files.forEach(function(src, i) {
             fileSrc = from + src;
             fileDest = to + src;
             if (fs.statSync(fileSrc).isFile()) {
                 if (path.extname(src) !== '.shtml') return;
                 merge(fileSrc, fileDest, wwwroot, true);
+            } else {
+                fetch(fileSrc, fileDest, wwwroot);
             }
         });
     }
+}
+
+var shtml2html = function(from, to, wwwroot, callback) {
+    from = from || './';
+    to = to || './_shtml2html_' + (+new Date()).toString().substring(6) + '/';
+    wwwroot = fixPath(wwwroot);
+    buffer = {};
+
+    fetch(from, to, wwwroot); //fix 
     callback(msgs);
 
     buffer = null;
