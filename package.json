@@ -28,5 +28,9 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/librajt/shtml2html/issues"
+  },
+  "homepage": "https://github.com/librajt/shtml2html#readme",
+  "directories": {
+    "test": "test"
   }
 }
