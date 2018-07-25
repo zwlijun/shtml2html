@@ -5,10 +5,13 @@ shtml2html-fix
 2. 在处理include文件时，将include文件里的路径替换成相对路径
 
 如：include文件里的引用是 
+```
 <link id="seed_style" rel="stylesheet" type="text/css" href="/static/v1.0/src/css/lib/gm.css">
+```
 执行shtml2html-fix后，在html页面中的引用变成为：
+```
 <link id="seed_style" rel="stylesheet" type="text/css" href="../../src/css/lib/gm.css">
-
+```
 git:https://github.com/zwlijun/shtml2html
 
 shtml2html
