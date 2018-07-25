@@ -30,6 +30,33 @@ var fixPath = function(src) {
     return src;
 };
 
+var parseExternalLink = function(wwwroot, refFilePath, content){
+    var pattern = /(href|src)[\s]*=[\s]*["']([^\s]+)["']/gi;
+    var matcher = null;
+    var link = null;
+    var absoultePath = null;
+    var relativePath = null;
+    var replacement = content;
+
+    pattern.lastIndex = 0;
+
+    while(null != (matcher = pattern.exec(content))){
+        link = matcher[2];
+
+        if(link.charAt(0) === "/"){
+            absoultePath = path.resolve(path.join(wwwroot, link));
+            relativePath = path.relative(refFilePath, link.substring(1));
+
+            relativePath = relativePath.replace(/\\/g, "/")
+                                       .replace(".shtml", ".html");
+
+            replacement = replacement.replace(link, relativePath.substring(3));
+        }
+        
+    }
+
+    return replacement;
+};
 
 var merge = function(src, dest, wwwroot, save) {
     var baseSrc = path.dirname(src) + '/', 
@@ -65,6 +92,11 @@ var merge = function(src, dest, wwwroot, save) {
                     incDest = baseDest + incFile;
                 }
                 replacement = merge(incSrc, incDest, wwwroot, false);
+
+                replacement = parseExternalLink(wwwroot, path.resolve(src), replacement)
+
+                // console.warn(">>> " + path.resolve(src))
+                // console.log("@>>> " + path.relative(path.resolve(src), path.resolve(incSrc)))
 
                 if (replacement === undefined) {
                     result = 1;
@@ -126,7 +158,8 @@ var shtml2html = function(from, to, wwwroot, callback) {
     wwwroot = fixPath(wwwroot);
     buffer = {};
 
-    fetch(from, to, wwwroot); //fix 
+    fetch(from, to, wwwroot);
+
     callback(msgs);
 
     buffer = null;
